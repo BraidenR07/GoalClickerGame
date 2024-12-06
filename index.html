@@ -1,0 +1,218 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Goal Clicker</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #008000; /* Green field background */
+            text-align: center;
+            color: white;
+            padding: 20px;
+        }
+        .soccer-ball {
+            width: 100px;
+            height: 100px;
+            margin: 20px auto;
+            cursor: pointer;
+            border-radius: 50%;
+            background-color: white;
+            background-image: radial-gradient(circle at center, black 30%, white 31%);
+            border: 3px solid #000;
+        }
+        .stats {
+            font-size: 1.2em;
+            margin: 20px;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 10px;
+            border-radius: 10px;
+        }
+        .upgrades {
+            margin: 20px auto;
+            width: 80%;
+            max-width: 400px;
+        }
+        .upgrade {
+            padding: 10px;
+            margin: 10px 0;
+            background-color: #34c759;
+            color: white;
+            border: 2px solid #28a745;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        .upgrade:disabled {
+            background-color: #555;
+            color: #aaa;
+            cursor: not-allowed;
+        }
+        .rebirth {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #ffc107;
+            color: black;
+            border: 2px solid #ff9800;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        .rebirth:disabled {
+            background-color: #555;
+            color: #aaa;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+    <h1>Goal Clicker</h1>
+    <div class="soccer-ball" onclick="scoreGoal()"></div>
+    <div class="stats">
+        <p>Goals: <span id="goals">0</span></p>
+        <p>Pounds (£): <span id="pounds">0</span></p>
+        <p>Goals Per Second (GPS): <span id="gps">0</span></p>
+        <p>Click Value: +<span id="clickValue">1</span> Goals</p>
+        <p>Prestige Multiplier: x<span id="multiplier">1</span></p>
+    </div>
+    <div class="upgrades">
+        <button class="upgrade" id="cleatsUpgrade" onclick="buyCleats()">Better Cleats (£50) - +1 Goal/Click</button>
+        <button class="upgrade" id="teammateUpgrade" onclick="hireTeammate()">Hire Teammate (£100) - +1 GPS</button>
+        <button class="upgrade" id="coachUpgrade" onclick="hireCoach()">Hire Coach (£500) - +5 GPS</button>
+        <button class="upgrade" id="stadiumUpgrade" onclick="upgradeStadium()">Upgrade Stadium (£1000) - x2 GPS</button>
+        <button class="upgrade" id="fanSupportUpgrade" onclick="buyFanSupport()">Fan Support (£2000) - x2 Click Value</button>
+        <button class="upgrade" id="newJerseysUpgrade" onclick="buyNewJerseys()">New Jerseys (£5000) - x2 GPS</button>
+    </div>
+    <button class="rebirth" id="rebirthButton" onclick="rebirth()" disabled>Rebirth (10000 Goals)</button>
+    <script>
+        let goals = 0;
+        let pounds = 0;
+        let gps = 0;
+        let goalsPerClick = 1;
+        let multiplier = 1;
+
+        // Initial costs for upgrades
+        let costs = {
+            cleats: 50,
+            teammate: 100,
+            coach: 500,
+            stadium: 1000,
+            fanSupport: 2000,
+            newJerseys: 5000
+        };
+
+        function scoreGoal() {
+            let earned = goalsPerClick * multiplier;
+            goals += earned;
+            pounds += earned;
+            updateStats();
+        }
+
+        function buyCleats() {
+            if (pounds >= costs.cleats) {
+                pounds -= costs.cleats;
+                goalsPerClick += 1;
+                costs.cleats = Math.ceil(costs.cleats * 1.05);
+                document.getElementById("cleatsUpgrade").textContent = `Better Cleats (£${costs.cleats}) - +1 Goal/Click`;
+                updateStats();
+            }
+        }
+
+        function hireTeammate() {
+            if (pounds >= costs.teammate) {
+                pounds -= costs.teammate;
+                gps += 1;
+                costs.teammate = Math.ceil(costs.teammate * 1.05);
+                document.getElementById("teammateUpgrade").textContent = `Hire Teammate (£${costs.teammate}) - +1 GPS`;
+                updateStats();
+            }
+        }
+
+        function hireCoach() {
+            if (pounds >= costs.coach) {
+                pounds -= costs.coach;
+                gps += 5;
+                costs.coach = Math.ceil(costs.coach * 1.05);
+                document.getElementById("coachUpgrade").textContent = `Hire Coach (£${costs.coach}) - +5 GPS`;
+                updateStats();
+            }
+        }
+
+        function upgradeStadium() {
+            if (pounds >= costs.stadium) {
+                pounds -= costs.stadium;
+                gps *= 2;
+                costs.stadium = Math.ceil(costs.stadium * 1.05);
+                document.getElementById("stadiumUpgrade").textContent = `Upgrade Stadium (£${costs.stadium}) - x2 GPS`;
+                updateStats();
+            }
+        }
+
+        function buyFanSupport() {
+            if (pounds >= costs.fanSupport) {
+                pounds -= costs.fanSupport;
+                goalsPerClick *= 2;
+                costs.fanSupport = Math.ceil(costs.fanSupport * 1.05);
+                document.getElementById("fanSupportUpgrade").textContent = `Fan Support (£${costs.fanSupport}) - x2 Click Value`;
+                updateStats();
+            }
+        }
+
+        function buyNewJerseys() {
+            if (pounds >= costs.newJerseys) {
+                pounds -= costs.newJerseys;
+                gps *= 2;
+                costs.newJerseys = Math.ceil(costs.newJerseys * 1.05);
+                document.getElementById("newJerseysUpgrade").textContent = `New Jerseys (£${costs.newJerseys}) - x2 GPS`;
+                updateStats();
+            }
+        }
+
+        function rebirth() {
+            if (goals >= 10000) {
+                multiplier += 1;
+                goals = 0;
+                pounds = 0;
+                gps = 0;
+                goalsPerClick = 1;
+
+                // Reset upgrade costs to initial values for simplicity
+                costs = {
+                    cleats: 50,
+                    teammate: 100,
+                    coach: 500,
+                    stadium: 1000,
+                    fanSupport: 2000,
+                    newJerseys: 5000
+                };
+
+                document.getElementById("cleatsUpgrade").textContent = `Better Cleats (£${costs.cleats}) - +1 Goal/Click`;
+                document.getElementById("teammateUpgrade").textContent = `Hire Teammate (£${costs.teammate}) - +1 GPS`;
+                document.getElementById("coachUpgrade").textContent = `Hire Coach (£${costs.coach}) - +5 GPS`;
+                document.getElementById("stadiumUpgrade").textContent = `Upgrade Stadium (£${costs.stadium}) - x2 GPS`;
+                document.getElementById("fanSupportUpgrade").textContent = `Fan Support (£${costs.fanSupport}) - x2 Click Value`;
+                document.getElementById("newJerseysUpgrade").textContent = `New Jerseys (£${costs.newJerseys}) - x2 GPS`;
+
+                updateStats();
+            }
+        }
+
+        function updateStats() {
+            document.getElementById("goals").textContent = goals;
+            document.getElementById("pounds").textContent = pounds;
+            document.getElementById("gps").textContent = gps;
+            document.getElementById("multiplier").textContent = multiplier;
+            document.getElementById("clickValue").textContent = goalsPerClick * multiplier;
+            document.getElementById("rebirthButton").disabled = goals < 10000;
+        }
+
+        // Increment GPS automatically
+        setInterval(() => {
+            let earned = gps * multiplier;
+            goals += earned;
+            pounds += earned;
+            updateStats();
+        }, 1000);
+    </script>
+</body>
+</html>
